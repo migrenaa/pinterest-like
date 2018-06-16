@@ -1,0 +1,31 @@
+{
+    "config": {
+        "development": {
+            "transports": [
+                {
+                    "type": "console",
+                    "level": "debug"
+                },
+                {
+                    "type": "file",
+                    "level": "debug",
+                    "filename": "logs/-combined-dev.log"
+                }
+            ]
+        },
+        "production": {
+            "transports": [
+                {
+                    "type": "file",
+                    "level": "debug",
+                    "filename": "logs/-combined-prod.log"
+                },
+                {
+                    "type": "file",
+                    "level": "error",
+                    "filename": "logs/-error-prod.log"
+                }
+            ]
+        }
+    }
+}
