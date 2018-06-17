@@ -1,7 +1,3 @@
-/**
- * Copyright (c) 2018 Centroida.AI All rights reserved.
- */
-
 import * as dotenv from "dotenv";
 import * as fs from "fs";
 import * as path from "path";

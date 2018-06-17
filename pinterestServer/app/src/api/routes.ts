@@ -1,7 +1,3 @@
-/**
- * Copyright (c) 2018 Centroida.AI All rights reserved.
- */
-
 import { Router } from "express";
 import UserController from "../api/controllers/users.controller";
 export default class ApiRouter {

@@ -1,8 +1,4 @@
-/**
- * Copyright (c) 2018 Centroida.AI All rights reserved.
- */
 
-import { Request, Response, NextFunction } from "express";
 import * as express from "express";
 import * as dotenv from "dotenv";
 import * as bodyParser from "body-parser";
