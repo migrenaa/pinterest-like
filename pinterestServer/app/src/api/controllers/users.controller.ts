@@ -2,9 +2,12 @@ import { Request, Response, NextFunction } from "express";
 import * as dotenv from "dotenv";
 import { Router } from "express";
 import UserStore from "../../stores/user.store";
+import { PostStore } from "../../stores/post.store";
 dotenv.config({ path: ".env" });
 import { JWT } from "../../config/passport.config";
 import * as bcrypt from "bcrypt";
+
+
 
 export default class UserController {
     private router: Router;
@@ -14,7 +17,9 @@ export default class UserController {
         this.userStore = new UserStore();
         this.router.post("/", (req: any, res: any, next: any) => { this.register(req, res, next); });
         this.router.post("/login", (req: any, res: any, next: any) => { this.login(req, res, next); });
-        // this.router.put("/:id", (req: any, res: any, next: any) => { this.update(req, res, next); });
+        this.router.post("/posts", (req: any, res: any, next: any) => { this.addPost(req, res, next); });
+        // this.router.post("/posts", passport.authenticate("jwt", { session: false }),
+        //     (req: any, res: any, next: any) => { this.addPost(req, res, next); });
     }
 
     public getRouter(): Router {
@@ -73,8 +78,32 @@ export default class UserController {
                 }
             });
         }
-
     }
+
+
+    public async addPost(req: Request, res: Response, next: NextFunction) {
+        // const token = req.headers["authorization"];
+        // console.log(token);
+
+        // const decoded = jwt.decode(token.toString(), {});
+        // console.log(decoded);
+        // res.status(404);
+        if (!req.body.content) {
+            res.status(400).send({ success: false, message: "Content is a required field." });
+        } else if (!req.body.authorId) {
+            res.status(400).send({ success: false, message: "AuthorId is a required field." });
+        } else {
+            const id = await PostStore.create(
+                req.body.content,
+                req.body.photoUrl,
+                req.body.authorId
+            );
+            res.status(201).send({ id: id[0] });
+        }
+    }
+}
+
+
 
     // public update(req: Request, res: Response, next: NextFunction) {
     //     UserSchema.findOneAndUpdate(
@@ -125,4 +154,3 @@ export default class UserController {
     //         }
     //     });
     // }
-}
