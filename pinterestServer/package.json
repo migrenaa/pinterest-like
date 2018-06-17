@@ -1,16 +1,16 @@
 {
-  "name": "pinterest-server",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "build": "tslint --fix -c tslint.json -p tsconfig.json && tslint -c tslint.json -p tsconfig.json  && tsc",
-    "start": "npm run build && node dist/runServer.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
+    "name": "pinterest-server",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "build": "tslint --fix -c tslint.json -p tsconfig.json && tslint -c tslint.json -p tsconfig.json  && tsc",
+        "start": "npm run build && node dist/runServer.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
         "@types/ws": "~4.0.1",
         "ajv": "~6.1.1",
         "bcrypt": "1.0.3",
@@ -25,7 +25,6 @@
         "jwt-simple": "0.5.1",
         "lodash": "~4.17.4",
         "merge-descriptors": "~1.0.1",
-        "mongoose": "~4.6.6",
         "node-cron": "~1.2.1",
         "nsp": "~3.2.1",
         "nsp-reporter-checkstyle": "~1.1.0",
@@ -35,8 +34,9 @@
         "sync-request": "~5.0.0",
         "winston": "~2.4.0",
         "winston-daily-rotate-file": "~1.7.2",
-        "winston-mongodb": "~4.0.0-rc1",
-        "ws": "~4.1.0"
+        "ws": "~4.1.0",
+        "knex": "^0.14.2",
+        "mysql": "^2.15.0"
     },
     "devDependencies": {
         "@types/amqplib": "~0.5.5",
@@ -47,8 +47,6 @@
         "@types/express-session": "~0.0.32",
         "@types/lodash": "~4.14.63",
         "@types/mocha": "~2.2.44",
-        "@types/mongodb": "~2.1.43",
-        "@types/mongoose": "~4.7.9",
         "@types/node": "~7.0.12",
         "@types/request": "2.0.9",
         "@types/sinon": "~4.1.1",

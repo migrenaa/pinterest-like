@@ -27,11 +27,6 @@ Thumbs.db
 # Ignore built ts files
 dist/**/*
 
-# MongoDB data and Ethereum data
-data/
-data_test/
-ethereum/
-
 # IDEs and editors
 /.idea
 .project
@@ -48,3 +43,4 @@ ethereum/
 !.vscode/launch.json
 !.vscode/extensions.json
 
+data/

@@ -3,11 +3,16 @@
  */
 
 import { Router } from "express";
-
+import UserController from "../api/controllers/users.controller";
 export default class ApiRouter {
     private readonly router: Router;
+    private readonly userController: UserController;
 
-    constructor() {
+    constructor(userController: UserController) {
+        if (!userController) {
+            throw new Error("Provided User Controller instance is not truthy!");
+        }
+        this.userController = userController;
         this.router = Router();
         this._init();
     }
@@ -17,6 +22,6 @@ export default class ApiRouter {
     }
 
     private _init() {
-        // this.router.use("/", this.fabricCaController.getRouter());
+        this.router.use("/users", this.userController.getRouter());
     }
 }

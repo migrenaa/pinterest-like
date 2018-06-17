@@ -1,16 +1,13 @@
 version: "3.3"
 services:
-  mongo:
-    container_name: mongo
+  mysql:
+    container_name: mysql
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=Yy3QCwj6mM7ADDhm
-    image: mongo
-    volumes:
-      - ./data:/data/db
-      - ./mongo-setup:/docker-entrypoint-initdb.d
-    ports:
-      - "27017"
+      - MYSQL_ROOT_PASSWORD="c41c9ded"
+      - MYSQL_DATABASE="pinterest"
+    image: mysql
+    # volumes:
+      # - mysql_data:/var/lib/mysql
     networks:
       - pinterest-net
 
