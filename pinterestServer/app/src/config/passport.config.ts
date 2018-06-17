@@ -4,9 +4,7 @@ const ExtractJwt = require("passport-jwt").ExtractJwt;
 
 import * as dotenv from "dotenv";
 import * as jwt from "jsonwebtoken";
-import { UserSchema } from "../../../app/src/schemas/user.schema";
-import { User } from "../../../app/src/types/user";
-import { NextFunction } from "express";
+const userStore = require( "../stores/user.store");
 dotenv.config({ path: ".env" });
 
 
@@ -19,7 +17,7 @@ export namespace JWT {
         };
 
         passport.use(new JwtStrategy(options, (jwt_payload: any, done: any) => {
-            UserSchema.findById(jwt_payload._id, (err: any, user: any) => {
+            userStore.getById(jwt_payload._id, (err: any, user: any) => {
                 if (err) {
                     return done(err, false);
                 }

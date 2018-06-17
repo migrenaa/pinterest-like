@@ -1,9 +1,3 @@
-/**
- * Copyright (c) 2018 Centroida.AI All rights reserved.
- */
-
-
-// import * as https from "https";
 const http = require("http");
 import * as fs from "fs";
 import { Application } from "express";
@@ -12,14 +6,21 @@ import App from "./app";
 import ApiRouter from "./routes";
 import { Logger } from "../services/logging.service";
 
+import UserController from "./controllers/users.controller";
+
 dotenv.config({ path: ".env" });
 
 export class Server {
 
     private app: Application;
+    private readonly userController: UserController;
 
 
-    public constructor() {
+    public constructor(userController: UserController) {
+        if (!userController) {
+            throw new Error("Provided User Controller instance is not truthy!");
+        }
+        this.userController = userController;
         this.init();
     }
 
@@ -28,7 +29,7 @@ export class Server {
     }
 
     private init() {
-        const router = new ApiRouter();
+        const router = new ApiRouter(this.userController);
         this.app = (new App(router)).getApp();
         this.app.set("port", process.env.API_PORT);
     }

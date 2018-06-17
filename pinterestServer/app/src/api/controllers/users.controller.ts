@@ -1,112 +1,128 @@
 import { Request, Response, NextFunction } from "express";
-import { UserSchema, UserModel } from "../../schemas/user.schema";
-import { User } from "../../types/user";
-import { JWT } from "../../config/passport.config";
-import * as fs from "fs";
-import * as path from "path";
 import * as dotenv from "dotenv";
+import { Router } from "express";
+import UserStore from "../../stores/user.store";
 dotenv.config({ path: ".env" });
+import { JWT } from "../../config/passport.config";
+import * as bcrypt from "bcrypt";
 
 export default class UserController {
-
-    public register(req: Request, res: Response, next: NextFunction) {
-        UserSchema.findOne({ email: { $in: [req.body.email] } }, (err: string, user: User) => {
-            if (user) {
-                res.status(302).send({ success: false, message: "User already exists!" });
-            } else {
-                const newUser: UserModel = new UserSchema({
-                    name: req.body.name,
-                    email: req.body.email,
-                    password: req.body.password,
-                    token: JWT.generateToken({ email: req.body.email }),
-                });
-                newUser.save((err: string, user: User) => {
-                });
-                res.status(201).send({ message: "Please, confirm your email!" });
-            }
-        });
+    private router: Router;
+    private userStore: UserStore;
+    constructor() {
+        this.router = Router();
+        this.userStore = new UserStore();
+        this.router.post("/", (req: any, res: any, next: any) => { this.register(req, res, next); });
+        this.router.post("/login", (req: any, res: any, next: any) => { this.login(req, res, next); });
+        // this.router.put("/:id", (req: any, res: any, next: any) => { this.update(req, res, next); });
     }
 
-    public login(req: Request, res: Response, next: NextFunction) {
-        UserSchema.findOne({ email: { $in: [req.body.email] } }, (err: string, user: any) => {
-            if (!user) {
-                res.status(404).send({ success: false, message: "User not found!" });
-            } else if (!user.isEmailConfirmed) {
-                res.status(400).send({ success: false, message: "Please, confirm your email!" });
-            } else {
-                user.comparePassword(req.body.password, (err: any, isMatch: boolean) => {
-                    if (!isMatch) {
-                        res.status(400).send({ success: false, message: "Wrong password!" });
-                    } else {
-                        const jwtObject = {
-                            _id: user._id,
-                            email: user.email,
-                            name: user.name
-                        };
-
-                        user.token = `jwt ${JWT.generateToken(jwtObject)}`;
-                        user.save();
-                        res.status(200).send(
-                            {
-                                token: user.token,
-                                name: user.name,
-                                email: user.email,
-                                role: user.role,
-                            }
-                        );
-                    }
-                });
-            }
-        });
+    public getRouter(): Router {
+        return this.router;
     }
 
-    public update(req: Request, res: Response, next: NextFunction) {
-        UserSchema.findOneAndUpdate(
-            { email: { $in: [req.body.email] } },
-            { $set: { name: req.body.name, ethereumWallet: req.body.ethereumWallet } },
-            { new: true }, (err: string, user: User) => {
-                if (!user) {
-                    res.status(404).send({ success: false, message: "User not found!" });
-                } else {
+    public async register(req: Request, res: Response, next: NextFunction) {
+
+        console.log("register user called");
+        const user = await this.userStore.getByEmail(req.body.email);
+        if (user) {
+            res.status(302).send({ success: false, message: "User already exists!" });
+        } else {
+            await bcrypt.hash(req.body.password, 10, (err, hash) => {
+                this.userStore.create(
+                    req.body.name,
+                    req.body.email,
+                    hash,
+                    0,
+                    JWT.generateToken({ email: req.body.email })
+                ).then((id: Array<number>) => {
+                    res.status(201).send({ id: id[0] });
+                });
+            });
+        }
+    }
+
+    public async login(req: Request, res: Response, next: NextFunction) {
+        const user = await this.userStore.getByEmail(req.body.email);
+        if (!user) {
+            res.status(404).send({ success: false, message: "User not found!" });
+        } else {
+            bcrypt.compare(req.body.password, user.password, async (err, isMatch) => {
+                if (isMatch) {
+                    const jwtObject = {
+                        _id: user._id,
+                        email: user.email,
+                        name: user.name
+                    };
+                    await this.userStore.update(
+                        user.name,
+                        user.email,
+                        user.password,
+                        user.role,
+                        JWT.generateToken(jwtObject));
                     res.status(200).send(
                         {
+                            token: user.token,
                             name: user.name,
                             email: user.email,
-                            ethereumWallet: user.ethereumWallet
+                            role: user.role,
                         }
                     );
+                } else {
+                    res.status(400).send({ success: false, message: "Wrong password!" });
                 }
             });
+        }
+
     }
 
-    public changePassword(req: Request, res: Response, next: NextFunction) {
-        UserSchema.findOne({ email: { $in: [req.body.email] } }, (err: string, user: any) => {
-            if (!user) {
-                res.status(404).send({ success: false, message: "User not found!" });
-            } else {
-                user.comparePassword(req.body.oldPassword, (err: any, isMatch: boolean) => {
-                    if (isMatch) {
-                        user.password = req.body.newPassword;
-                        user.save();
-                        res.status(200).send({ message: "Password is successfully changed!" });
-                    } else {
-                        res.status(400).send({ message: "Incorrect password!" });
-                    }
-                });
-            }
-        });
-    }
+    // public update(req: Request, res: Response, next: NextFunction) {
+    //     UserSchema.findOneAndUpdate(
+    //         { email: { $in: [req.body.email] } },
+    //         { $set: { name: req.body.name, ethereumWallet: req.body.ethereumWallet } },
+    //         { new: true }, (err: string, user: User) => {
+    //             if (!user) {
+    //                 res.status(404).send({ success: false, message: "User not found!" });
+    //             } else {
+    //                 res.status(200).send(
+    //                     {
+    //                         name: user.name,
+    //                         email: user.email,
+    //                         ethereumWallet: user.ethereumWallet
+    //                     }
+    //                 );
+    //             }
+    //         });
+    // }
 
-    public forgottenPassword(req: Request, res: Response, next: NextFunction) {
-        UserSchema.findOne({ email: { $in: [req.body.email] } }, (err: string, user: UserModel) => {
-            if (!user) {
-                res.status(404).send({ success: false, message: "User not found!" });
-            } else {
-                user.password = Math.random().toString(36).slice(-8);
-                // TODO send mail
-                user.save();
-                res.status(200).send({ message: "An email containing your new password is sent!" });
-            }
-        });
-    }
+    // public changePassword(req: Request, res: Response, next: NextFunction) {
+    //     UserSchema.findOne({ email: { $in: [req.body.email] } }, (err: string, user: any) => {
+    //         if (!user) {
+    //             res.status(404).send({ success: false, message: "User not found!" });
+    //         } else {
+    //             user.comparePassword(req.body.oldPassword, (err: any, isMatch: boolean) => {
+    //                 if (isMatch) {
+    //                     user.password = req.body.newPassword;
+    //                     user.save();
+    //                     res.status(200).send({ message: "Password is successfully changed!" });
+    //                 } else {
+    //                     res.status(400).send({ message: "Incorrect password!" });
+    //                 }
+    //             });
+    //         }
+    //     });
+    // }
+
+    // public forgottenPassword(req: Request, res: Response, next: NextFunction) {
+    //     UserSchema.findOne({ email: { $in: [req.body.email] } }, (err: string, user: UserModel) => {
+    //         if (!user) {
+    //             res.status(404).send({ success: false, message: "User not found!" });
+    //         } else {
+    //             user.password = Math.random().toString(36).slice(-8);
+    //             // TODO send mail
+    //             user.save();
+    //             res.status(200).send({ message: "An email containing your new password is sent!" });
+    //         }
+    //     });
+    // }
 }
