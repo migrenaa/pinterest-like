@@ -11,6 +11,7 @@ export default class CategorisController {
     constructor() {
         this.router = Router();
         this.router.get("/:id/posts", (req: any, res: any, next: any) => { this.getPostsByCategory(req, res, next); });
+        this.router.get("/", (req: any, res: any, next: any) => { this.searchForCategories(req, res, next); });
     }
 
     public getRouter(): Router {
@@ -18,33 +19,22 @@ export default class CategorisController {
     }
 
     public async getPostsByCategory(req: Request, res: Response, next: NextFunction) {
-        const id = req.params.id;
-        console.log(id);
-        if (!id) {
-            const posts = await PostStore.getAll();
-            res.status(200).send(posts);
-        } else {
-            const category = await CategoryStore.getById(id);
-            if (!category) {
-                res.status(404).send("No such category.");
-            }
-            const posts = await PostStore.getByCategoryId(id);
-            res.status(200).send(posts);
+        const category = await CategoryStore.getById(req.params.id);
+        if (!category || category === "") {
+            res.status(404).send("No such category.");
         }
+        const posts = await PostStore.getByCategoryId(req.params.id);
+        res.status(200).send(posts);
+
     }
 
     public async searchForCategories(req: Request, res: Response, next: NextFunction) {
-        if (!req.body.content) {
-            res.status(400).send({ success: false, message: "Content is a required field." });
-        } else if (!req.body.authorId) {
-            res.status(400).send({ success: false, message: "AuthorId is a required field." });
+        if (!req.params.name) {
+            const categories = await CategoryStore.getAll();
+            res.status(200).send(categories);
         } else {
-            const id = await PostStore.create(
-                req.body.content,
-                req.body.photoUrl,
-                req.body.authorId
-            );
-            res.status(201).send({ id: id[0] });
+            const categories = await CategoryStore.search(req.params.name);
+            res.status(200).send(categories);
         }
     }
 }
