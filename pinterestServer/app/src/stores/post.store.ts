@@ -14,9 +14,8 @@ export namespace PostStore {
     }
     export function getByCategoryId(categoryId: number) {
         return knex("posts")
-            .innerJoin("postCategories", () => {
-                this.on(categoryId, "=", "postCategories.categoryId");
-            });
+            .join("postCategories", "posts.id", "=", "postCategories.postId")
+            .where("categoryId", categoryId);
     }
 
     export function getAll() {

@@ -10,7 +10,7 @@ export default class CategorisController {
     private router: Router;
     constructor() {
         this.router = Router();
-        this.router.post("/:id/posts", (req: any, res: any, next: any) => { this.getPostsByCategory(req, res, next); });
+        this.router.get("/:id/posts", (req: any, res: any, next: any) => { this.getPostsByCategory(req, res, next); });
     }
 
     public getRouter(): Router {
