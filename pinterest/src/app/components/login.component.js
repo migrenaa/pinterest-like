@@ -1,25 +1,23 @@
 import React, { Component } from 'react'
 import axios from 'axios'
 
-class RegistrationComponent extends Component {
+class LoginComponent extends Component {
 
     constructor() {
         super()
         this.state = {
-            name: '',
             email: '',
             password: ''
         }
-        this.handleChange = this.handleChange.bind(this)
+        this.handleChange = this.handleChange.bind(this);
     }
     render() {
         return (
             <div className='button__container'>
                 <form onSubmit={this.handleSubmit.bind(this)}>
-                    <input type="text" name="name"  onChange={this.handleChange} />
                     <input type="text" name="email"  onChange={this.handleChange}/>
                     <input type="text" name="password"  onChange={this.handleChange} />
-                    <input type="submit" value="Register"/>
+                    <input type="submit" value="Login"onSubmit={this.handleSubmit.bind(this)}/>
                 </form>
             </div>
         )
@@ -28,10 +26,10 @@ class RegistrationComponent extends Component {
     handleSubmit(event) {
         var body = {
             email: this.state.email,
-            name: this.state.name,  
             password: this.state.password
         };
-        axios.post('http://localhost:4000/api/users', body)
+        console.log(body);
+        axios.post('http://localhost:4000/api/users/login', body)
             .then(response => {
                 console.log(response);
             })
@@ -41,9 +39,8 @@ class RegistrationComponent extends Component {
         event.preventDefault();
     }
 
-
     handleChange (evt) {
         this.setState({ [evt.target.name]: evt.target.value });
       }
 }
-export default RegistrationComponent
+export default LoginComponent
