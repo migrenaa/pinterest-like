@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import PostComponent from "./app/components/post-list.component"
 import RegistraitonComponent from "./app/components/registration.component"
 import CategoriesListComponent from "./app/components/categories-list.component"
+import LoginComponent from "./app/components/login.component"
 
 class App extends Component {
 
@@ -13,13 +14,15 @@ class App extends Component {
         <div>
           <ul className="main-menu">
             <li><Link to="/posts">Posts</Link></li>
-            <li><Link to="/auth">Registration</Link></li>
+            <li><Link to="/register">Registration</Link></li>
             <li><Link to="/categories">Categories</Link></li>
+            <li><Link to="/auth">Login</Link></li>
           </ul>
           <hr />
           <Route path="/posts" component={PostComponent} />
-          <Route path="/auth" component={RegistraitonComponent} />
+          <Route path="/register" component={RegistraitonComponent} />
           <Route path="/categories" component={CategoriesListComponent} />
+          <Route path="/auth" component={LoginComponent} />
         </div>
       </Router>
     )
