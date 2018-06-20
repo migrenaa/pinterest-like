@@ -10,16 +10,15 @@ class RegistrationComponent extends Component {
             email: '',
             password: ''
         }
-        this.handleSubmit = this.handleSubmit.bind(this)
     }
     render() {
         return (
             <div className='button__container'>
-                <form onSubmit={this.handleSubmit}>
-                    <input type="text" name="name" />
-                    <input type="text" name="email" />
-                    <input type="text" name="password" />
-                    <input type="submit" value="Register"/>
+                <form onSubmit={this.handleSubmit.bind(this)}>
+                    <input type="text" name="name"  onChange={this.handleChange.bind(this)} />
+                    <input type="text" name="email"  onChange={this.handleChange.bind(this)}/>
+                    <input type="text" name="password"  onChange={this.handleChange.bind(this)} />
+                    <input type="submit" value="Register"onSubmit={this.handleSubmit.bind(this)}/>
                 </form>
             </div>
         )
