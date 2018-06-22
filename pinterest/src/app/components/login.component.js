@@ -3,44 +3,88 @@ import axios from 'axios'
 
 class LoginComponent extends Component {
 
-    constructor() {
-        super()
+    constructor(props) {
+        super(props);
+
+        // reset login status
+
         this.state = {
-            email: '',
-            password: ''
-        }
+            username: '',
+            password: '',
+            submitted: false
+        };
+
         this.handleChange = this.handleChange.bind(this);
-    }
-    render() {
-        return (
-            <div className='button__container'>
-                <form onSubmit={this.handleSubmit.bind(this)}>
-                    <input type="text" name="email"  onChange={this.handleChange}/>
-                    <input type="text" name="password"  onChange={this.handleChange} />
-                    <input type="submit" value="Login"onSubmit={this.handleSubmit.bind(this)}/>
-                </form>
-            </div>
-        )
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.register = this.register.bind(this);
     }
 
-    handleSubmit(event) {
-        var body = {
-            email: this.state.email,
-            password: this.state.password
-        };
-        console.log(body);
-        axios.post('http://localhost:4000/api/users/login', body)
+    handleChange(e) {
+        const { name, value } = e.target;
+        this.setState({ [name]: value });
+    }
+
+    handleSubmit(e) {
+        e.preventDefault();
+
+        this.setState({ submitted: true });
+        const { username, password } = this.state;
+        if (username && password) {
+            console.log(username, password)
+            axios.post('http://localhost:4000/api/users/login', this.state)
             .then(response => {
-                console.log(response);
+                this.props.history.push("/home");
             })
             .catch(error => {
                 console.log(error)
             });
-        event.preventDefault();
+        }
     }
 
-    handleChange (evt) {
-        this.setState({ [evt.target.name]: evt.target.value });
-      }
+    register(e) {
+        e.preventDefault();
+        this.props.history.push("/register");
+    }
+
+    render() {
+        const { loggingIn } = this.props;
+        const { username, password, submitted } = this.state;
+        return (
+            <div className="login-form-wrapper">
+                <div className="form-sub">
+                    <p>Please enter your email and password to sign in</p>
+                    <form name="form" onSubmit={this.handleSubmit}>
+                        <div className={'form-group' + (submitted && !username ? ' has-error' : '')}>
+                            <label htmlFor="username">Username</label>
+                            <input type="text" className="form-control" name="username" value={username} onChange={this.handleChange} />
+                            {submitted && !username &&
+                            <div className="help-block">Username is required</div>
+                            }
+                        </div>
+                        <div className={'form-group' + (submitted && !password ? ' has-error' : '')}>
+                            <label htmlFor="password">Password</label>
+                            <input type="password" className="form-control" name="password" value={password} onChange={this.handleChange} />
+                            {submitted && !password &&
+                            <div className="help-block">Password is required</div>
+                            }
+                        </div>
+                        <div className="form-group login-btn">
+                            <button className="btn btn-primary">Login</button>
+                        </div>
+                    </form>
+
+                    <div className="hr"></div>
+
+                    <div className="sign-up">
+                        <h3>Hello, are you new?</h3>
+                        <button className="btn btn-secondary sign-up-button" onClick={this.register}>
+                            Sign up now
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 }
+
 export default LoginComponent
