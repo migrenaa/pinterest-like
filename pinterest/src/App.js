@@ -8,71 +8,57 @@ import {
     BrowserRouter as Router,
     Route,
     Redirect,
-    withRouter,
-    Lin
+    withRouter
 } from 'react-router-dom';
 
-const fakeAuth = {
-    isAuthenticated: false,
-    authenticate(cb) {
-        this.isAuthenticated = true;
-        setTimeout(cb, 100); // fake async
-    },
-    signout(cb) {
-        this.isAuthenticated = false;
-        setTimeout(cb, 100);
-    }
-};
-const PrivateRoute = ({ component: Component, ...rest }) => (
-  <Route
-      {...rest}
-      render={props =>
-          fakeAuth.isAuthenticated ? (
-              <Component {...props} />
-          ) : (
-              <Redirect
-                  to={{
-                      pathname: "/login",
-                      state: { from: props.location }
-                  }}
-              />
-          )
-      }
-  />
+const PrivateRoute = ({component: Component, ...rest}) => (
+    <Route
+        {...rest}
+        render={props =>
+            localStorage.getItem('isLoggedIn') ? (
+                <Component {...props} />
+            ) : (
+                <Redirect
+                    to={{
+                        pathname: "/login",
+                        state: {from: props.location}
+                    }}
+                />
+            )
+        }
+    />
 );
 
 
-
-const Auth = withRouter(({ history }) => (
-  fakeAuth.isAuthenticated ? (
-    <Redirect
-      to="/home"
-    />
-  ) : (
-      <Redirect
-        to="/login"
-      />
+const Auth = withRouter(({history}) => (
+    localStorage.getItem('isLoggedIn') ? (
+        <Redirect
+            to="/home"
+        />
+    ) : (
+        <Redirect
+            to="/login"
+        />
     )
 ));
 
 
 class App extends Component {
 
-  render() {
-    return (
-      <Router>
-        <div className="router-wrapper">
-          {/* <Auth /> */}
-          <Route path="/home" component={PostComponent} />
-          <Route path="/register" component={RegistraitonComponent} />
-          <Route path="/categories" component={CategoriesListComponent} />
-          <Route path="/login" component={LoginComponent} />
-        </div>
-      </Router>
-    )
-  }
+    render() {
+        return (
+            <Router>
+                <div className="router-wrapper">
+                    <Auth />
+                    <PrivateRoute path="/home" component={PostComponent}/>
+                    <PrivateRoute path="/categories" component={CategoriesListComponent}/>
+                    <Route path="/login" component={LoginComponent}/>
+                    <Route path="/register" component={RegistraitonComponent}/>
+                </div>
+            </Router>
+        )
+    }
 }
-
 
 
 export default App
