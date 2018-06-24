@@ -68,7 +68,7 @@ export default class UserController {
                         JWT.generateToken(jwtObject));
                     res.status(200).send(
                         {
-                            token: user.token,
+                            token: `jwt ${user.token}`,
                             name: user.name,
                             email: user.email,
                             role: user.role,
