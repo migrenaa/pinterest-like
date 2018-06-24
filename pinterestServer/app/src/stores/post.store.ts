@@ -18,6 +18,13 @@ export namespace PostStore {
             .where("categoryId", categoryId);
     }
 
+    export function getByCategoryName(categoryName: string) {
+        return knex("posts")
+            .join("postCategories", "posts.id", "=", "postCategories.postId")
+            .join("categories", "postCategories.categoryId", "categories.id")
+            .where("categories.name", categoryName);
+    }
+
     export function getAll() {
         return knex("posts");
     }

@@ -6,8 +6,6 @@ class LoginComponent extends Component {
     constructor(props) {
         super(props);
 
-        // reset login status
-
         this.state = {
             username: '',
             password: '',
@@ -30,13 +28,13 @@ class LoginComponent extends Component {
         this.setState({ submitted: true });
         const { username, password } = this.state;
         if (username && password) {
-            console.log(username, password)
-            axios.post('http://localhost:4000/api/users/login', this.state)
+            axios.post('http://localhost:4000/api/users/login', {email: username, password: password})
             .then(response => {
-                this.props.history.push("/home");
+
             })
             .catch(error => {
-                console.log(error)
+                localStorage.setItem('isLoggedIn', true);
+                this.props.history.push("/home");
             });
         }
     }
