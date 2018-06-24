@@ -6,6 +6,7 @@ import { PostStore } from "../../stores/post.store";
 dotenv.config({ path: ".env" });
 import { JWT } from "../../config/passport.config";
 import * as bcrypt from "bcrypt";
+import * as passport from "passport";
 
 
 
@@ -17,9 +18,9 @@ export default class UserController {
         this.userStore = new UserStore();
         this.router.post("/", (req: any, res: any, next: any) => { this.register(req, res, next); });
         this.router.post("/login", (req: any, res: any, next: any) => { this.login(req, res, next); });
-        this.router.post("/posts", (req: any, res: any, next: any) => { this.addPost(req, res, next); });
-        // this.router.post("/posts", passport.authenticate("jwt", { session: false }),
-        //     (req: any, res: any, next: any) => { this.addPost(req, res, next); });
+        this.router.route("/posts")
+                .post(passport.authenticate("jwt", { session: false }),
+                (req, res, next) => this.addPost(req, res, next));
     }
 
     public getRouter(): Router {

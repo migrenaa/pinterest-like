@@ -11,7 +11,6 @@ dotenv.config({ path: ".env" });
 export namespace JWT {
 
     export function configAuth(passport: any) {
-        console.log("here");
         const options = {
             jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme("jwt"),
             secretOrKey: process.env.CONFIG_KEY,
@@ -19,9 +18,7 @@ export namespace JWT {
 
         passport.use(new JwtStrategy(options, (jwt_payload: any, done: any) => {
             const userStore = new UserStore();
-            console.log(jwt_payload._id);
             const user = userStore.getById(jwt_payload._id);
-            console.log("user:", user);
             if (user) {
                 done(undefined, user);
             } else {

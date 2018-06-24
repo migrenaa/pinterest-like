@@ -3,14 +3,19 @@ import * as dotenv from "dotenv";
 import { Router } from "express";
 import { PostStore } from "../../stores/post.store";
 dotenv.config({ path: ".env" });
+import * as passport from "passport";
 
 
 export default class PostsController {
     private router: Router;
     constructor() {
         this.router = Router();
-        this.router.get("/", (req: any, res: any, next: any) => { this.search(req, res, next); });
-        this.router.post("/", (req: any, res: any, next: any) => { this.addPost(req, res, next); });
+        this.router.route("/")
+            .get(passport.authenticate("jwt", { session: false }),
+            (req, res, next) => this.search(req, res, next));
+        this.router.route("/")
+            .post(passport.authenticate("jwt", { session: false }),
+            (req, res, next) => this.addPost(req, res, next));
     }
 
     public getRouter(): Router {
@@ -42,10 +47,11 @@ export default class PostsController {
             req.body.photoURL,
             req.body.authorId,
         );
-
-        req.body.categories.forEach((categoryId: number) => {
-            PostStore.relatePostToCategory(post, categoryId);
-        });
+        console.log(req.body.categories);
+        for (const category of req.body.categories) {
+            console.log(category);
+            await PostStore.relatePostToCategory(post, category);
+        }
 
         res.status(201).send(post);
     }

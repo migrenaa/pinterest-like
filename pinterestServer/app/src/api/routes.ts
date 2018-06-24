@@ -9,6 +9,7 @@ export default class ApiRouter {
     private readonly userController: UserController;
     private readonly categoryController: CategoryController;
     private readonly postsController: PostsController;
+
     constructor(userController: UserController, categoryController: CategoryController,
     postsController: PostsController) {
         if (!userController) {
