@@ -1,80 +1,6 @@
 import React, { Component } from 'react'
 import Autosuggest from 'react-autosuggest';
-const languages = [
-    {
-        name: 'C',
-        year: 1972
-    },
-    {
-        name: 'C#',
-        year: 2000
-    },
-    {
-        name: 'C++',
-        year: 1983
-    },
-    {
-        name: 'Clojure',
-        year: 2007
-    },
-    {
-        name: 'Elm',
-        year: 2012
-    },
-    {
-        name: 'Go',
-        year: 2009
-    },
-    {
-        name: 'Haskell',
-        year: 1990
-    },
-    {
-        name: 'Java',
-        year: 1995
-    },
-    {
-        name: 'Javascript',
-        year: 1995
-    },
-    {
-        name: 'Perl',
-        year: 1987
-    },
-    {
-        name: 'PHP',
-        year: 1995
-    },
-    {
-        name: 'Python',
-        year: 1991
-    },
-    {
-        name: 'Ruby',
-        year: 1995
-    },
-    {
-        name: 'Scala',
-        year: 2003
-    }
-];
-
-// https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expressions#Using_Special_Characters
-function escapeRegexCharacters(str) {
-    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
-function getSuggestions(value) {
-    const escapedValue = escapeRegexCharacters(value.trim());
-
-    if (escapedValue === '') {
-        return [];
-    }
-
-    const regex = new RegExp('^' + escapedValue, 'i');
-
-    return languages.filter(language => regex.test(language.name));
-}
+import axios from 'axios'
 
 function getSuggestionValue(suggestion) {
     return suggestion.name;
@@ -104,9 +30,28 @@ class Header extends Component {
 
     logout(e) {
         e.preventDefault();
-        localStorage.setItem('isLoggedIn', false);
+        localStorage.removeItem('token');
+        localStorage.removeItem('email');
         this.props.history.push("/login");
     }
+
+    
+    loadCategories(value) {
+        var url = null;
+        if(value){
+            url = `http://localhost:4000/api/categories?name=${value}`;
+        } else {
+            url = `http://localhost:4000/api/categories`;
+        }
+        return axios.get(url, {
+                headers: {
+                    Authorization: localStorage.getItem("token")
+                }
+            })
+            .then((response) => {
+                return response.data;
+            });
+    };
 
     navigateToCategories(e) {
         e.preventDefault();
@@ -120,8 +65,10 @@ class Header extends Component {
     };
 
     onSuggestionsFetchRequested = ({ value }) => {
-        this.setState({
-            suggestions: getSuggestions(value)
+        this.loadCategories(value).then((res) => {
+            this.setState({
+                suggestions: res
+            });
         });
     };
 
