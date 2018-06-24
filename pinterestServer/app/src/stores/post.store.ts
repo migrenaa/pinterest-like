@@ -12,6 +12,14 @@ export namespace PostStore {
             authorId: authorId
         }).returning("id");
     }
+
+    export function relatePostToCategory(postId: number, categoryId: number) {
+        return knex("postCategories").insert({
+            postId : postId,
+            categoryId : categoryId
+        });
+    }
+
     export function getByCategoryId(categoryId: number) {
         return knex("posts")
             .join("postCategories", "posts.id", "=", "postCategories.postId")

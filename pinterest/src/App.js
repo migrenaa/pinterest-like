@@ -49,7 +49,7 @@ class App extends Component {
         return (
             <Router>
                 <div className="router-wrapper">
-                    <Auth />
+                    {/* <Auth /> */}
                     <PrivateRoute path="/home" component={PostComponent}/>
                     <PrivateRoute path="/categories" component={CategoriesListComponent}/>
                     <Route path="/login" component={LoginComponent}/>
