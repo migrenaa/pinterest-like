@@ -33,10 +33,9 @@ class LoginComponent extends Component {
                 console.log(response.data);
                 localStorage.setItem('email', response.data.email);
                 localStorage.setItem('token', response.data.token);
-
+                this.props.history.push("/home");
             })
             .catch(error => {
-                localStorage.setItem('isLoggedIn', true);
                 this.props.history.push("/home");
             });
         }
