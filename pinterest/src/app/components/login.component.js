@@ -30,6 +30,9 @@ class LoginComponent extends Component {
         if (username && password) {
             axios.post('http://localhost:4000/api/users/login', {email: username, password: password})
             .then(response => {
+                console.log(response.data);
+                localStorage.setItem('email', response.data.email);
+                localStorage.setItem('token', response.data.token);
 
             })
             .catch(error => {
