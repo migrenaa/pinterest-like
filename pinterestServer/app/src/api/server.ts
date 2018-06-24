@@ -10,6 +10,8 @@ import { JWT } from "../config/passport.config";
 import UserController from "./controllers/users.controller";
 import CategoryController from "./controllers/categories.controller";
 
+import PostsController from "./controllers/posts.controller";
+
 dotenv.config({ path: ".env" });
 
 export class Server {
@@ -17,17 +19,22 @@ export class Server {
     private app: Application;
     private readonly userController: UserController;
     private readonly categoryController: CategoryController;
+    private readonly postsController: PostsController;
 
-
-    public constructor(userController: UserController, categoryController: CategoryController) {
+    public constructor(userController: UserController, categoryController: CategoryController,
+    postsController: PostsController) {
         if (!userController) {
             throw new Error("Provided User Controller instance is not truthy!");
         }
         if (!categoryController) {
             throw new Error("Provided Category Controller instance is not truthy!");
         }
+        if (!postsController) {
+            throw new Error("Provided Posts Controller instance is not truthy!");
+        }
         this.userController = userController;
         this.categoryController = categoryController;
+        this.postsController = postsController;
         this.init();
     }
 
@@ -36,7 +43,8 @@ export class Server {
     }
 
     private init() {
-        const router = new ApiRouter(this.userController, this.categoryController);
+        const router = new ApiRouter(this.userController, this.categoryController,
+        this.postsController);
         this.app = (new App(router)).getApp();
         this.app.set("port", process.env.API_PORT);
         this.app.set("superSecret", process.env.CONFIG_KEY);

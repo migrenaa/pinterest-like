@@ -12,6 +12,7 @@ export default class CategorisController {
         this.router = Router();
         this.router.get("/:id/posts", (req: any, res: any, next: any) => { this.getPostsByCategory(req, res, next); });
         this.router.get("/", (req: any, res: any, next: any) => { this.searchForCategories(req, res, next); });
+        this.router.post("/", (req: any, res: any, next: any) => { this.addCategory(req, res, next); });
     }
 
     public getRouter(): Router {
@@ -35,6 +36,15 @@ export default class CategorisController {
         } else {
             const categories = await CategoryStore.search(req.params.name);
             res.status(200).send(categories);
+        }
+    }
+
+    public async addCategory(req: Request, res: Response, next: NextFunction) {
+        if (!req.body.name) {
+            res.status(400).send("The name property is not provided.");
+        } else {
+            const categories = await CategoryStore.create(req.body.name, req.body.description);
+            res.status(201).send(categories);
         }
     }
 }

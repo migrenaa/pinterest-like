@@ -12,4 +12,10 @@ export namespace CategoryStore {
     export function getAll() {
         return knex("categories");
     }
+    export function create(name: string, desciption: string) {
+        return knex("categories").insert({
+            name: name,
+            desciption: desciption,
+        }).returning("id");
+    }
 }
