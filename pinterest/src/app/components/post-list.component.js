@@ -8,15 +8,11 @@ import 'react-select/dist/react-select.css';
 
 
 const getCategoriesAsync = (input) => { 
-    return axios.get(`http://localhost:4000/api/categories?name=${input}`,{
+    return axios.get(`http://localhost:4000/api/categories`,{
         headers: { Authorization: localStorage.getItem("token") }
     })
         .then((response) => {
-            console.log(response);
-            return response.json();
-        }).then((json) => {
-            console.log(json);
-            return { options: json };
+            return response.data;
         });
 };
 
