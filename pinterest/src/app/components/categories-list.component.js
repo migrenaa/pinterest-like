@@ -34,7 +34,8 @@ class CategoriesListComponent extends Component {
 
     logout(e) {
         e.preventDefault();
-        localStorage.setItem('isLoggedIn', false);
+        localStorage.removeItem("token");
+        localStorage.removeItem("email");
         this.props.history.push("/login");
     }
 

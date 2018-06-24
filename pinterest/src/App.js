@@ -15,7 +15,7 @@ const PrivateRoute = ({component: Component, ...rest}) => (
     <Route
         {...rest}
         render={props =>
-            localStorage.getItem('isLoggedIn') ? (
+            localStorage.getItem('token') ? (
                 <Component {...props} />
             ) : (
                 <Redirect
@@ -31,7 +31,7 @@ const PrivateRoute = ({component: Component, ...rest}) => (
 
 
 const Auth = withRouter(({history}) => (
-    localStorage.getItem('isLoggedIn') ? (
+    localStorage.getItem('token') ? (
         <Redirect
             to="/home"
         />
