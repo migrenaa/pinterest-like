@@ -1,0 +1,30 @@
+version: "3.3"
+services:
+  mysql:
+    container_name: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD="12345qQ!"
+      - MYSQL_DATABASE="pinterest"
+    image: mysql
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+    networks:
+      - pinterest-net
+
+  pinterest-server:
+    build: ./pinterestServer
+    ports:
+      - 4000:4000
+    networks:
+      - pinterest-net
+
+  pinterest-web:
+    build: ./pinterest
+    ports:
+      - 3000:3000
+    networks:
+      - pinterest-net
+
+networks:
+  pinterest-net:
+
