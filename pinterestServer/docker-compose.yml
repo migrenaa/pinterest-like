@@ -3,11 +3,11 @@ services:
   mysql:
     container_name: mysql
     environment:
-      - MYSQL_ROOT_PASSWORD="c41c9ded"
+      - MYSQL_ROOT_PASSWORD="12345qQ!"
       - MYSQL_DATABASE="pinterest"
     image: mysql
     # volumes:
-      # - mysql_data:/var/lib/mysql
+    #   - mysql_data:/var/lib/mysql
     networks:
       - pinterest-net
 

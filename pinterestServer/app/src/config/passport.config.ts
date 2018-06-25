@@ -1,6 +1,6 @@
 const JwtStrategy = require("passport-jwt").Strategy;
 const ExtractJwt = require("passport-jwt").ExtractJwt;
-import UserStore from "../stores/user.store";
+import { UserStore } from "../stores/user.store";
 
 
 import * as dotenv from "dotenv";
@@ -17,13 +17,14 @@ export namespace JWT {
         };
 
         passport.use(new JwtStrategy(options, (jwt_payload: any, done: any) => {
-            const userStore = new UserStore();
-            const user = userStore.getById(jwt_payload._id);
-            if (user) {
-                done(undefined, user);
-            } else {
-                done(undefined, false);
-            }
+            UserStore.getById(jwt_payload._id)
+                .then((user: any) => {
+                    if (user) {
+                        done(undefined, user);
+                    } else {
+                        done(undefined, false);
+                    }
+                });
         }));
     }
 

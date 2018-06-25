@@ -4,18 +4,21 @@ import { Router } from "express";
 import { PostStore } from "../../stores/post.store";
 dotenv.config({ path: ".env" });
 import * as passport from "passport";
+import { UserStore } from "../../stores/user.store";
 
 
 export default class PostsController {
     private router: Router;
     constructor() {
         this.router = Router();
-        this.router.route("/")
-            .get(passport.authenticate("jwt", { session: false }),
-            (req, res, next) => this.search(req, res, next));
-        this.router.route("/")
-            .post(passport.authenticate("jwt", { session: false }),
-            (req, res, next) => this.addPost(req, res, next));
+        // this.router.route("/")
+        //     .get(passport.authenticate("jwt", { session: false }),
+        //     (req, res, next) => this.search(req, res, next));
+        // this.router.route("/")
+        //     .post(passport.authenticate("jwt", { session: false }),
+        //     (req, res, next) => this.addPost(req, res, next));
+        this.router.post("/", (req, res, next) => this.addPost(req, res, next));
+        this.router.get("/", (req, res, next) => this.search(req, res, next));
     }
 
     public getRouter(): Router {
@@ -37,20 +40,20 @@ export default class PostsController {
             res.status(400).send("JSON body not provided.");
         } else if (!req.body.content) {
             res.status(400).send("Content not provided.");
-        } if (!req.body.authorId) {
-            res.status(400).send("Author id not provided");
+        } if (!req.body.email) {
+            res.status(400).send("Email not provided");
         } if (!req.body.categories) {
             res.status(400).send("At least one categoryId should be provided");
         }
+
+        const user = await UserStore.getByEmail(req.body.email);
         const post = await PostStore.create(
             req.body.content,
-            req.body.photoURL,
-            req.body.authorId,
+            req.body.photoUrl,
+            user.id,
         );
-        console.log(req.body.categories);
         for (const category of req.body.categories) {
-            console.log(category);
-            await PostStore.relatePostToCategory(post, category);
+            await PostStore.relatePostToCategory(post, category.id);
         }
 
         res.status(201).send(post);
