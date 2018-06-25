@@ -2,7 +2,6 @@ import { Request, Response, NextFunction } from "express";
 import * as dotenv from "dotenv";
 import { Router } from "express";
 import { UserStore } from "../../stores/user.store";
-import { PostStore } from "../../stores/post.store";
 dotenv.config({ path: ".env" });
 import { JWT } from "../../config/passport.config";
 import * as bcrypt from "bcrypt";
