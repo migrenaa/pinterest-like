@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import '../../App.css'
 import axios from 'axios'
-import { Link } from "react-router-dom";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 class CategoriesListComponent extends Component {
@@ -13,7 +12,7 @@ class CategoriesListComponent extends Component {
             categories: [],
             category: {
                 name: "",
-                description: ""
+                description: "",
             },
             submitted: false,
             modal: false
@@ -50,13 +49,11 @@ class CategoriesListComponent extends Component {
 
         this.setState({ submitted: true });
         const { name, description } = this.state.category;
-
+        console.log(this.state.category)
         if (name) {
-            axios.post('http://localhost:4000/api/categories', this.state.category,
-            { headers: { Authorization: localStorage.getItem("token") } })
+            axios.post("http://localhost:4000/api/categories", this.state.category, {
+                headers: { Authorization: localStorage.getItem("token") } } )
                 .then(response => {
-
-                    // TODO make sure the response is in json and its a post object.
                     this.setState({
                         categories: [...this.state.categories, response]
                     });
@@ -127,7 +124,7 @@ class CategoriesListComponent extends Component {
         return (
             <div className="post-list-component">
                 <Modal isOpen={this.state.modal} toggle={this.toggle}>
-                    <ModalHeader toggle={this.toggle}>Creating a new post</ModalHeader>
+                    <ModalHeader toggle={this.toggle}>Creating a new category</ModalHeader>
                     <ModalBody>
                         <form name="form">
                             <div className={'form-group' + (submitted && !name ? ' has-error' : '')}>
@@ -140,9 +137,6 @@ class CategoriesListComponent extends Component {
                             <div className={'form-group' + (submitted && !description ? ' has-error' : '')}>
                                 <label htmlFor="content">Description</label>
                                 <textarea type="text" className="form-control" name="description" value={description} onChange={this.handleChange} />
-                                {submitted && !description &&
-                                <div className="help-block">Description is required</div>
-                                }
                             </div>
                         </form>
                     </ModalBody>

@@ -3,18 +3,8 @@ import '../../App.css'
 import axios from 'axios'
 import Header from "./header.component";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import Async from 'react-select';
+import Select from 'react-select';
 import 'react-select/dist/react-select.css';
-
-
-const getCategoriesAsync = (input) => { 
-    return axios.get(`http://localhost:4000/api/categories`,{
-        headers: { Authorization: localStorage.getItem("token") }
-    })
-        .then((response) => {
-            return response.data;
-        });
-};
 
 class PostComponent extends Component {
 
@@ -28,7 +18,6 @@ class PostComponent extends Component {
                     categoryId: 0,
                     content: "A summary will also be present. Usually two to three brief sentences about the content on the detail page.",
                     photoUrl: "http://placeimg.com/400/200/animals",
-                    authorId: 0,
                     created_at: "June 18th, 2015",
                     updated_at: "",
                 }
@@ -38,10 +27,11 @@ class PostComponent extends Component {
                 categories: [],
                 content: "",
                 photoUrl: "",
-                authorId: 0,
                 created_at: "",
                 updated_at: "",
+                email: ""
             },
+            categories: [],
             submitted: false,
             modal: false
         };
@@ -63,8 +53,10 @@ class PostComponent extends Component {
 
         this.setState({ submitted: true });
         const { categories, content, photoUrl } = this.state.post;
-
+            console.log(this.state.post)
         if (categories && content && photoUrl) {
+            this.state.post.email = localStorage.getItem("email");
+            console.log(this.state.post);
             axios.post('http://localhost:4000/api/posts', this.state.post, 
             { headers : {Authorization: localStorage.getItem("token") } })
                 .then(response => {
@@ -80,9 +72,9 @@ class PostComponent extends Component {
                         categories: [],
                         content: "",
                         photoUrl: "",
-                        authorId: 0,
                         created_at: "",
                         updated_at: "",
+                        email: ""
                     }}});
                     this.toggle(e);
                 })
@@ -111,8 +103,9 @@ class PostComponent extends Component {
     render() {
         const { submitted } = this.state;
         const { categories, content, photoUrl } = this.state.post;
+        console.log(this.state.post);
         const posts = this.state.posts.map((post) =>
-            <a className="card">
+            <a className="card"  key={post.id}>
                 <span className="card-header"
                       style={{backgroundImage: `url(${post.photoUrl})`}}>
                 </span>
@@ -132,7 +125,7 @@ class PostComponent extends Component {
                         <form name="form">
                             <div className={'form-group' + (submitted && !categories ? ' has-error' : '')}>
                                 <label htmlFor="categories">Categories</label>
-                                <Async
+                                <Select
                                     name="categories"
                                     value={categories}
                                     multi={true}
@@ -144,7 +137,11 @@ class PostComponent extends Component {
                                             }
                                         });
                                     }}
-                                    loadOptions={getCategoriesAsync}
+                                    options={this.state.categories.map(x => {
+                                        x['label'] = x.name;
+                                        x['value'] = x.name;
+                                        return x;
+                                    })}
                                 />
                                 {submitted && !categories &&
                                 <div className="help-block">Categories is required</div>
@@ -184,15 +181,24 @@ class PostComponent extends Component {
 
     componentDidMount() {
         this.loadPosts();
+        axios.get(`http://localhost:4000/api/categories`,{
+        headers: { Authorization: localStorage.getItem("token") }
+    })
+        .then((response) => {
+            this.setState({
+                categories: response.data,
+                // post: { email: localStorage.getItem("email") }
+            });
+        });
     }
 
-    loadPosts() {
-        axios.get('http://localhost:4000/api/categories/1/posts',
+    loadPosts(categoryId) {
+        axios.get('http://localhost:4000/api/posts',
         { headers: { Authorization: localStorage.getItem("token") } })
             .then(response => {
                 this.setState({
                     posts: response.data
-                });
+                }); 
             });
     }
 

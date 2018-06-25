@@ -14,13 +14,16 @@ export default class CategorisController {
             .get(passport.authenticate("jwt", { session: false }),
             (req, res, next) => this.getPostsByCategory(req, res, next));
 
-        this.router.route("/")
-            .get(passport.authenticate("jwt", { session: false }),
-            (req, res, next) => this.searchForCategories(req, res, next));
 
-        this.router.route("/")
-            .post(passport.authenticate("jwt", { session: false }),
-            (req, res, next) => this.addCategory(req, res, next));
+            this.router.get("/", (req, res, next) => this.searchForCategories(req, res, next));
+        // this.router.route("/")
+        //     // .get(passport.authenticate("jwt", { session: false }),
+        //     (req, res, next) => this.searchForCategories(req, res, next));
+
+        // this.router.route("/")
+        //     .post(passport.authenticate("jwt", { session: false }),
+        //     (req, res, next) => this.addCategory(req, res, next));
+        this.router.post("/", (req, res, next) => this.addCategory(req, res, next));
     }
 
     public getRouter(): Router {
